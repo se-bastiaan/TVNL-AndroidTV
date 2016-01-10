@@ -1,0 +1,40 @@
+<resources>
+
+    <string name="app_name">TVNL</string>
+    <string name="unknown_error">Er is een onbekende fout opgetreden.</string>
+    <string name="loading">Laden…</string>
+
+    <!-- Headers -->
+    <string name="start">Start</string>
+    <string name="missed">Gemist</string>
+    <string name="fragments">Kort</string>
+    <string name="live">Live</string>
+    <string name="radio">Radio</string>
+    <string name="guide">Gids</string>
+    <string name="settings">Settings</string>
+
+    <string name="alphabet">Alle\u00a0programma\'s</string>
+    <string name="trending">Meest bekeken</string>
+
+    <!-- Videoplayer -->
+    <string name="loading_livestream_error">De livestream kon niet worden geladen. Probeer het later nog eens.</string>
+    <string name="encountered_error_title">Er is een fout opgetreden bij het afspelen van de video.</string>
+    <string name="encountered_error">Er is een fout opgetreden in de videospeler. Het videobestand kon niet worden geopend en/of afgespeeld. Het bestandsformaat kon niet worden herkend.</string>
+
+    <!-- Search -->
+    <string name="search_results">Zoekresultaten</string>
+    <string name="series">Programma\'s</string>
+    <string name="episodes">Afleveringen</string>
+
+    <!-- Details -->
+    <string name="watch_episode">Bekijk aflevering</string>
+    <string name="watch_fragment">Bekijk fragment</string>
+    <string name="episode_subtitle">Afl. %1$s  •  %2$s  •  %3$s min  •  %4$s</string>
+    <string name="episode_grid_subtitle">%1$s  •  %2$s min</string>
+
+    <!-- Dialogs -->
+    <string name="loading_livestream">Videolink ophalen…</string>
+    <string name="close">Sluiten</string>
+    <string name="ok">Oké</string>
+
+</resources>

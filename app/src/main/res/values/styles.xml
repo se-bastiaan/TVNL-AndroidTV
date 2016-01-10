@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.Leanback.MoreCardViewStyle" parent="Widget.Leanback.BaseCardViewStyle">
+        <item name="cardType">infoUnder</item>
+        <item name="infoVisibility">always</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:foreground">@drawable/lb_card_foreground</item>
+    </style>
+
+    <style name="Widget.TVNL.GuidanceDescriptionStyle" parent="@style/Widget.Leanback.GuidanceDescriptionStyle">
+        <item name="android:gravity">start</item>
+        <item name="android:maxLines">9999</item>
+    </style>
+
+    <style name="Widget.TVNL.GuidedActionsContainerStyle" parent="@style/Widget.Leanback.GuidedActionsContainerStyle">
+        <item name="android:background">@color/primary_dark</item>
+    </style>
+
+    <style name="Dialog.TVNL.Animation" parent="android:Animation.Dialog">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+</resources>

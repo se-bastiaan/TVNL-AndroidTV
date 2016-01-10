@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_width">120dp</dimen>
+    <dimen name="card_height">180dp</dimen>
+    <dimen name="card_thumbnail_width">190dp</dimen>
+    <dimen name="card_thumbnail_height">100dp</dimen>
+    <dimen name="card_noimage_padding">16dp</dimen>
+    <dimen name="card_info_padding">6dp</dimen>
+    <dimen name="card_info_width">90dp</dimen>
+
+    <dimen name="details_overview_margin_left">132dp</dimen>
+    <dimen name="details_overview_margin_right">132dp</dimen>
+    <dimen name="details_overview_description_margin_left">24dp</dimen>
+    <dimen name="details_overview_description_margin_right">24dp</dimen>
+</resources>

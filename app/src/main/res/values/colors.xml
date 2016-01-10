@@ -1,0 +1,28 @@
+<resources>
+
+    <color name="primary">#fd6d21</color>
+    <color name="primary_dark">#b64a11</color>
+    <color name="grey">#272727</color>
+    <color name="overlay">#44000000</color>
+    <color name="white">#ffbebebe</color>
+
+    <color name="npo1">#d9151b</color>
+    <color name="npo2">#009cdd</color>
+    <color name="npo3">#1d9d27</color>
+    <color name="npo_cult">#009cdd</color>
+    <color name="npo_best">#d9151b</color>
+    <color name="npo_nieuws">#d9151b</color>
+    <color name="npo_humor_tv">#1d9d27</color>
+    <color name="npo_pol">#d9151b</color>
+    <color name="npo_doc">#009cdd</color>
+    <color name="npo_101">#006995</color>
+    <color name="npo_zapp_xtra">#1d9d27</color>
+    <color name="radio1">#003576</color>
+    <color name="radio2">#d9151b</color>
+    <color name="radio3">#4c420d</color>
+    <color name="radio4">#77216f</color>
+    <color name="radio5">#d6630e</color>
+    <color name="radio6">#aa008c</color>
+    <color name="radio7">#6e298c</color>
+
+</resources>
