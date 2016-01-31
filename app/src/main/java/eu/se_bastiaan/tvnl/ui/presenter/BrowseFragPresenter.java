@@ -313,7 +313,7 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
                                             public List<Channel> call(MainChannelsGuide mainChannelsGuide, ThemeChannelsGuide themeChannelsGuide) {
                                                 ArrayList<Channel> returnData = new ArrayList<>();
                                                 ArrayList<List<Broadcast>> channelList = new ArrayList<>();
-                                                String[] channelIds = {"ned1", "ned2", "ned3", "nieuws24", "politiek24", "best24", "cultura24", "hollanddoc24", "humor24", "101tv", "zappelin24"};
+                                                String[] channelIds = {"ned1", "ned2", "ned3", "journaal24", "politiek24", "best24", "cultura24", "hollanddoc24", "humor24", "101tv", "zappelin24"};
                                                 String[] names = {"NPO 1", "NPO 2", "NPO 3", "NPO Nieuws", "NPO Politiek", "NPO Best", "NPO Cultura", "NPO Doc", "NPO Humor TV", "NPO 101", "NPO Zapp Xtra"};
                                                 int[] images = {R.drawable.ic_npo1, R.drawable.ic_npo2, R.drawable.ic_npo3, R.drawable.ic_npo_nieuws, R.drawable.ic_npo_politiek, R.drawable.ic_npo_best, R.drawable.ic_npo_cultura, R.drawable.ic_npo_doc, R.drawable.ic_npo_humor_tv, R.drawable.ic_npo_101, R.drawable.ic_npo_zapp_xtra};
                                                 int[] colors = {R.color.npo1, R.color.npo2, R.color.npo3, R.color.npo_nieuws, R.color.npo_pol, R.color.npo_best, R.color.npo_cult, R.color.npo_doc, R.color.npo_humor_tv, R.color.npo_101, R.color.npo_zapp_xtra};
@@ -541,9 +541,9 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
         }
     }
 
-    public void itemClicked(Fragment fragment, Object item) {
+    public void itemClicked(Object item) {
         if(item instanceof OverviewGridItem) {
-            OverviewGridItem gridItem = (OverviewGridItem) item;
+            final OverviewGridItem gridItem = (OverviewGridItem) item;
             Object object = gridItem.getObject();
 
             if(object instanceof Timeline && ((Timeline) object).isLive()) {
@@ -606,7 +606,14 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
                 return;
             }
 
-            DetailsActivity.startActivity(fragment.getActivity(), gridItem);
+            viewFiltered().first().observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(new Action1<OverviewBrowseFragment>() {
+                        @Override
+                        public void call(OverviewBrowseFragment overviewBrowseFragment) {
+                            DetailsActivity.startActivity(overviewBrowseFragment.getActivity(), gridItem);
+                        }
+                    })
+                    .subscribe();
         } else if (item instanceof Channel) {
             Timber.d("Channel clicked! -> %s", ((Channel) item).getId());
             openLiveStream((Channel) item);
