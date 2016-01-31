@@ -160,11 +160,12 @@ public class DetailsFragPresenter extends BasePresenter<DetailsFragment> {
                                             public ArrayObjectAdapter call(Series series) {
                                                 ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new OverviewGridPresenter(context));
 
+                                                Series episodeSeries = series.getWithoutEpisodes();
                                                 for (Episode episode : series.getEpisodes()) {
                                                     if (episode.getId().equals(DetailsFragPresenter.this.episode.getId()))
                                                         continue;
 
-                                                    episode.setSeries(series);
+                                                    episode.setSeries(episodeSeries);
                                                     OverviewGridItem gridItem = episode.toOverviewGridItem();
                                                     gridItem.setSubtitle(context.getString(R.string.episode_grid_subtitle, episode.getBroadcastedAtAsStr(), TimeUnit.SECONDS.toMinutes(episode.getDuration())));
                                                     listRowAdapter.add(gridItem);
@@ -293,27 +294,6 @@ public class DetailsFragPresenter extends BasePresenter<DetailsFragment> {
             viewHolder.getBody().setText(description);
         }
 
-    }
-
-    public class StringPresenter extends Presenter {
-        private static final String TAG = "StringPresenter";
-
-        public ViewHolder onCreateViewHolder(ViewGroup parent) {
-            TextView tv = new TextView(parent.getContext());
-            tv.setFocusable(true);
-            tv.setFocusableInTouchMode(true);
-            tv.setBackground(
-                    parent.getContext().getResources().getDrawable(R.drawable.text_bg));
-            return new ViewHolder(tv);
-        }
-
-        public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-            ((TextView) viewHolder.view).setText(item.toString());
-        }
-
-        public void onUnbindViewHolder(ViewHolder viewHolder) {
-
-        }
     }
 
 }

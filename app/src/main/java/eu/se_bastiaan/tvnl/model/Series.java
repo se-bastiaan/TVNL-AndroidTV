@@ -67,6 +67,22 @@ public class Series implements Parcelable {
     public OverviewGridItem<Series> toOverviewGridItem() {
         return new OverviewGridItem<>(this, name, TextUtils.join(", ", broadcasters), getImage());
     }
+    
+    public Series getWithoutEpisodes() {
+        return new Series(this);
+    }
+
+    private Series(Series series) {
+        this.mid = series.mid;
+        this.name = series.name;
+        this.image = series.image;
+        this.neboId = series.neboId;
+        this.genres = series.genres;
+        this.broadcasters = series.broadcasters;
+        this.episodeCount = series.episodeCount;
+        this.code = series.code;
+        this.startsWith = series.startsWith;
+    }
 
     protected Series(Parcel in) {
         mid = in.readString();
