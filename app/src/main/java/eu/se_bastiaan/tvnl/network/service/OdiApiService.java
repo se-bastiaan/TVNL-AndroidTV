@@ -1,9 +1,9 @@
 package eu.se_bastiaan.tvnl.network.service;
 
 import eu.se_bastiaan.tvnl.model.OdiData;
-import retrofit.http.GET;
-import retrofit.http.Query;
-import retrofit.http.Url;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Single;
 
 public interface OdiApiService {

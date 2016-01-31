@@ -15,17 +15,17 @@
  */
 package eu.se_bastiaan.tvnl.network;
 
-import com.squareup.okhttp.Connection;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Protocol;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.internal.http.HttpEngine;
+import okhttp3.Connection;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.http.HttpEngine;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -159,7 +159,7 @@ public final class HttpLoggingInterceptor implements Interceptor {
         boolean hasRequestBody = requestBody != null;
 
         Connection connection = chain.connection();
-        Protocol protocol = connection != null ? connection.getProtocol() : Protocol.HTTP_1_1;
+        Protocol protocol = connection != null ? connection.protocol() : Protocol.HTTP_1_1;
         String requestStartMessage =
                 "--> " + request.method() + ' ' + request.url() + ' ' + protocol(protocol);
         if (!logHeaders && hasRequestBody) {

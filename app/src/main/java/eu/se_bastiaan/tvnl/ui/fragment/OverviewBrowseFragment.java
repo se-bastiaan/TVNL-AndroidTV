@@ -141,7 +141,7 @@ public class OverviewBrowseFragment extends BrowseSupportFragment implements Vie
     private OnItemViewClickedListener onItemViewClickedListener = new OnItemViewClickedListener() {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-            getPresenter().itemClicked(OverviewBrowseFragment.this, item);
+            getPresenter().itemClicked(item);
         }
     };
 

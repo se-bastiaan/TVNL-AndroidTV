@@ -54,7 +54,7 @@
         <service android:name=".service.RecommendationService" />
 
         <meta-data
-            android:name="eu.se_bastiaan.tvnl.network.OkHttpGlideModule"
+            android:name="eu.se_bastiaan.tvnl.network.glide.OkHttpGlideModule"
             android:value="GlideModule"/>
 
     </application>

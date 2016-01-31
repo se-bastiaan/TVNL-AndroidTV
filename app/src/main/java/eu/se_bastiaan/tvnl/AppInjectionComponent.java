@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import eu.se_bastiaan.tvnl.network.NetworkModule;
-import eu.se_bastiaan.tvnl.network.OkHttpGlideModule;
+import eu.se_bastiaan.tvnl.network.glide.OkHttpGlideModule;
 import eu.se_bastiaan.tvnl.service.RecommendationService;
 import eu.se_bastiaan.tvnl.service.recommendation.RecommendationContentProvider;
 import eu.se_bastiaan.tvnl.ui.activity.DetailsActivity;

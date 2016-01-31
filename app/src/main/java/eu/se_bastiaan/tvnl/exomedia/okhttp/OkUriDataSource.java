@@ -12,8 +12,8 @@ import com.google.android.exoplayer.upstream.FileDataSource;
 import com.google.android.exoplayer.upstream.HttpDataSource;
 import com.google.android.exoplayer.upstream.TransferListener;
 import com.google.android.exoplayer.upstream.UriDataSource;
-import com.squareup.okhttp.CacheControl;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.CacheControl;
+import okhttp3.OkHttpClient;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +40,6 @@ public final class OkUriDataSource implements UriDataSource {
     private final UriDataSource fileDataSource;
     private final UriDataSource assetDataSource;
     private final UriDataSource contentDataSource;
-    private static final OkHttpClient sOkHttpClient = new OkHttpClient();
 
     /**
      * {@code null} if no data source is open. Otherwise, equal to {@link #fileDataSource} if the open
@@ -99,11 +98,11 @@ public final class OkUriDataSource implements UriDataSource {
     }
 
     private static OkHttpClient getDefaultOkHttpClient(boolean allowCrossProtocolRedirects) {
-        OkHttpClient okHttpClient = sOkHttpClient.clone();
-        okHttpClient.setConnectTimeout(DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        okHttpClient.setReadTimeout(DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        okHttpClient.setFollowSslRedirects(allowCrossProtocolRedirects);
-        return okHttpClient;
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
+        httpClientBuilder.connectTimeout(DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        httpClientBuilder.readTimeout(DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        httpClientBuilder.followSslRedirects(allowCrossProtocolRedirects);
+        return httpClientBuilder.build();
     }
 
     /**

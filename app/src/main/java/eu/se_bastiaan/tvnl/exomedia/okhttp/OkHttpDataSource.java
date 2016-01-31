@@ -21,13 +21,13 @@ import com.google.android.exoplayer.upstream.HttpDataSource;
 import com.google.android.exoplayer.upstream.TransferListener;
 import com.google.android.exoplayer.util.Assertions;
 import com.google.android.exoplayer.util.Predicate;
-import com.squareup.okhttp.CacheControl;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.internal.Util;
+import okhttp3.CacheControl;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.internal.Util;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -115,7 +115,7 @@ public class OkHttpDataSource implements HttpDataSource {
 
     @Override
     public String getUri() {
-        return response == null ? null : response.request().urlString();
+        return response == null ? null : response.request().url().toString();
     }
 
     @Override
@@ -183,15 +183,10 @@ public class OkHttpDataSource implements HttpDataSource {
         bytesToSkip = responseCode == 200 && dataSpec.position != 0 ? dataSpec.position : 0;
 
         // Determine the length of the data to be read, after skipping.
-        try {
-            long contentLength = response.body().contentLength();
-            bytesToRead = dataSpec.length != C.LENGTH_UNBOUNDED ? dataSpec.length
-                    : contentLength != -1 ? contentLength - bytesToSkip
-                    : C.LENGTH_UNBOUNDED;
-        } catch (IOException e) {
-            closeConnectionQuietly();
-            throw new HttpDataSourceException(e, dataSpec);
-        }
+        long contentLength = response.body().contentLength();
+        bytesToRead = dataSpec.length != C.LENGTH_UNBOUNDED ? dataSpec.length
+                : contentLength != -1 ? contentLength - bytesToSkip
+                : C.LENGTH_UNBOUNDED;
 
         opened = true;
         if (listener != null) {
