@@ -40,7 +40,6 @@ public class BackgroundUpdater {
     private Timer backgroundTimer;
     private BackgroundManager backgroundManager;
     private String backgroundUrl;
-    private int screenHeight, screenWidth;
 
     public static BackgroundUpdater init(Activity activity, @DrawableRes int defaultBackground) {
         Display display = activity.getWindowManager().getDefaultDisplay();
@@ -52,8 +51,6 @@ public class BackgroundUpdater {
 
         updater.backgroundManager = BackgroundManager.getInstance(activity);
         updater.backgroundManager.attach(activity.getWindow());
-        updater.screenWidth = size.x;
-        updater.screenHeight = size.y;
         updater.backgroundImageTarget = new GlideBackgroundManagerTarget(size.x, size.y, updater.backgroundManager);
         updater.defaultBackground = defaultBackground;
 
