@@ -1,20 +1,3 @@
-/*
- * This file is part of Butter.
- *
- * Butter is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Butter is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Butter. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package eu.se_bastiaan.tvnl.util;
 
 import android.app.Activity;
@@ -28,8 +11,12 @@ import android.view.Display;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
+import rx.Single;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 public class BackgroundUpdater {
 
@@ -37,7 +24,7 @@ public class BackgroundUpdater {
     private int defaultBackground;
     private Context context;
     private Target backgroundImageTarget;
-    private Timer backgroundTimer;
+    private Subscription backgroundSubscription;
     private BackgroundManager backgroundManager;
     private String backgroundUrl;
 
@@ -71,19 +58,26 @@ public class BackgroundUpdater {
             return;
 
         backgroundUrl = url;
-        if (null != backgroundTimer) {
-            backgroundTimer.cancel();
-        }
-        backgroundTimer = new Timer();
-        backgroundTimer.schedule(new UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
+        backgroundSubscription = Single.just(backgroundUrl)
+                .delay(BACKGROUND_UPDATE_DELAY, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(new Action1<String>() {
+                    @Override
+                    public void call(String backgroundUrl) {
+                        if (backgroundUrl != null) {
+                            updateBackground(backgroundUrl);
+                        }
+                    }
+                })
+                .subscribe();
     }
 
 
     private void updateBackground(String url) {
         clearBackground();
 
-        if (null != backgroundTimer) {
-            backgroundTimer.cancel();
+        if (null != backgroundSubscription && !backgroundSubscription.isUnsubscribed()) {
+            backgroundSubscription.unsubscribe();
         }
 
         if (null == url)
@@ -131,24 +125,9 @@ public class BackgroundUpdater {
                 .into(backgroundImageTarget);
     }
 
-    private class UpdateBackgroundTask extends TimerTask {
-        @Override
-        public void run() {
-            ThreadUtil.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (backgroundUrl != null) {
-                        updateBackground(backgroundUrl);
-                    }
-
-                }
-            });
-        }
-    }
-
     public void destroy() {
-        if (null != backgroundTimer) {
-            backgroundTimer.cancel();
+        if (null != backgroundSubscription && !backgroundSubscription.isUnsubscribed()) {
+            backgroundSubscription.unsubscribe();
         }
 
         Glide.clear(backgroundImageTarget);
