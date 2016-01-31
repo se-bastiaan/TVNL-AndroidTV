@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -427,43 +428,46 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
                                 Timber.e(throwable, "Unable to get current timestamp, returning device time");
                                 return System.currentTimeMillis();
                             }
-                        }).flatMap(new Func1<Long, Single<List<Channel>>>() {
+                        })
+                        .toObservable()
+                        .flatMap(new Func1<Long, Observable<List<Channel>>>() {
                             @Override
-                            public Single<List<Channel>> call(final Long timestamp) {
+                            public Observable<List<Channel>> call(final Long timestamp) {
                                 return radioboxApiService.broadcastSearch(RadioboxApiService.QueryBuilder.Prebuilts.getCurrentDataForMainChannels(), 7, "channel.id:asc")
                                         .observeOn(Schedulers.newThread())
-                                        .map(new Func1<RadioboxSearch<RadioboxBroadcast>, List<Channel>>() {
+                                        .toObservable()
+                                        .flatMap(new Func1<RadioboxSearch<RadioboxBroadcast>, Observable<List<Channel>>>() {
                                             @Override
-                                            public List<Channel> call(RadioboxSearch<RadioboxBroadcast> radioboxBroadcastRadioboxSearch) {
-                                                List<RadioboxBroadcast> radioboxBroadcasts = radioboxBroadcastRadioboxSearch.getResults();
-                                                ArrayList<Channel> returnData = new ArrayList<>();
-                                                String[] channelIds = {"1", "2", "3", "4", "5", "6", "7"};
-                                                String[] names = {"NPO Radio 1", "NPO Radio 2", "NPO 3FM", "NPO Radio 4", "NPO Radio 5", "NPO Radio 6", "NPO FunX"};
-                                                int[] images = {R.drawable.ic_radio1, R.drawable.ic_radio2, R.drawable.ic_radio3, R.drawable.ic_radio4, R.drawable.ic_radio5, R.drawable.ic_radio6, R.drawable.ic_radio7};
-                                                int[] colors = {R.color.radio1, R.color.radio2, R.color.radio3, R.color.radio4, R.color.radio5, R.color.radio6, R.color.radio7};
+                                            public Observable<List<Channel>> call(RadioboxSearch<RadioboxBroadcast> radioboxBroadcastRadioboxSearch) {
+                                                final AtomicInteger i = new AtomicInteger();
+                                                final List<RadioboxBroadcast> radioboxBroadcasts = radioboxBroadcastRadioboxSearch.getResults();
+                                                final String[] channelIds = {"1", "2", "3", "4", "5", "6", "7"};
+                                                final String[] names = {"NPO Radio 1", "NPO Radio 2", "NPO 3FM", "NPO Radio 4", "NPO Radio 5", "NPO Radio 6", "NPO FunX"};
+                                                final int[] images = {R.drawable.ic_radio1, R.drawable.ic_radio2, R.drawable.ic_radio3, R.drawable.ic_radio4, R.drawable.ic_radio5, R.drawable.ic_radio6, R.drawable.ic_radio7};
+                                                final int[] colors = {R.color.radio1, R.color.radio2, R.color.radio3, R.color.radio4, R.color.radio5, R.color.radio6, R.color.radio7};
 
-                                                for (int i = 0; i < radioboxBroadcasts.size(); i++) {
-                                                    RadioboxBroadcast broadcast = radioboxBroadcasts.get(i);
+                                                return Observable.from(radioboxBroadcasts)
+                                                        .map(new Func1<RadioboxBroadcast, Channel>() {
+                                                            @Override
+                                                            public Channel call(RadioboxBroadcast broadcast) {
+                                                                long startedAt = broadcast.getStartTime().getTime();
+                                                                long timePassed = timestamp - startedAt;
+                                                                long duration = broadcast.getStopTime().getTime() - broadcast.getStartTime().getTime();
+                                                                int progress = (int) Math.ceil((100f / duration) * timePassed);
 
-                                                    long startedAt = broadcast.getStartTime().getTime();
-                                                    long timePassed = timestamp - startedAt;
-                                                    long duration = broadcast.getStopTime().getTime() - broadcast.getStartTime().getTime();
-                                                    int progress = (int) Math.ceil((100f / duration) * timePassed);
+                                                                String image = null;
+                                                                if (broadcast.getImage() != null)
+                                                                    image = broadcast.getImage().getUrl();
 
-                                                    String image = null;
-                                                    if (broadcast.getImage() != null)
-                                                        image = broadcast.getImage().getUrl();
-
-                                                    Channel channel = new Channel(channelIds[i], broadcast.getName(), names[i], image, progress, images[i], colors[i], true);
-                                                    returnData.add(channel);
-                                                }
-
-                                                return returnData;
+                                                                int index = i.getAndIncrement();
+                                                                return new Channel(channelIds[index], broadcast.getName(), names[index], image, progress, images[index], colors[index], true);
+                                                            }
+                                                        })
+                                                        .toList();
                                             }
                                         });
                             }
                         })
-                        .toObservable()
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread());
             }
