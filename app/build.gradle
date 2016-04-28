@@ -1,3 +1,5 @@
+import groovy.swing.SwingBuilder
+
 plugins {
     id "net.ltgt.errorprone" version "0.0.8"
     id "com.github.ben-manes.versions" version "0.12.0"
@@ -60,6 +62,15 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    signingConfigs {
+        mainConfig {
+            storeFile file(System.getenv("SIGN_STORE_FILE").toString())
+            keyAlias System.getenv("KEY_ALIAS").toString()
+            keyPassword 'password' // Fictive password to pass Gradle check
+            storePassword 'password' // Fictive password to pass Gradle check
+        }
     }
 }
 
@@ -125,3 +136,56 @@ configurations.errorprone {
     // 2.0.5 is the last version compatible with JDK 7
     resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.5'
 }
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if(taskGraph.hasTask(':app:assembleRelease')) {
+
+        def pass = System.getenv("ALIAS_KEY") ? System.getenv("ALIAS_KEY").toString() : ''
+        def store_pass = System.getenv("STORE_KEY") ? System.getenv("STORE_KEY").toString() : ''
+        if(pass == '' || store_pass == '') {
+            if (System.console() == null) {
+                new SwingBuilder().edt {
+                    dialog(modal: true, // Otherwise the build will continue running before you closed the dialog
+                            title: 'Enter password', // Dialog title
+                            alwaysOnTop: true, // pretty much what the name says
+                            resizable: false, // Don't allow the user to resize the dialog
+                            locationRelativeTo: null, // Place dialog in center of the screen
+                            pack: true, // We need to pack the dialog (so it will take the size of it's children)
+                            show: true // Let's show it
+                    ) {
+                        vbox { // Put everything below each other
+                            label(text: "Please enter storage passphrase:")
+                            input = passwordField()
+                            button(defaultButton: true, text: 'OK', actionPerformed: {
+                                store_pass = input.password;
+                                // Set pass variable to value of input field
+                                dispose(); // Close dialog
+                            })
+                        } // vbox end
+                        vbox { // Put everything below each other
+                            label(text: "Please enter key passphrase:")
+                            input = passwordField()
+                            button(defaultButton: true, text: 'OK', actionPerformed: {
+                                pass = input.password; // Set pass variable to value of input field
+                                dispose(); // Close dialog
+                            })
+                        } // vbox end
+                    } // dialog end
+                } // edt end
+            } else {
+                store_pass = System.console().readPassword("\nPlease enter storage passphrase: ")
+                store_pass = new String(store_pass)
+                pass = System.console().readPassword("\nPlease enter key passphrase: ")
+                pass = new String(pass)
+            }
+
+            if (pass.size() <= 0) {
+                throw new InvalidUserDataException("You must enter a password to proceed.")
+            }
+        }
+
+        android.signingConfigs.mainConfig.keyPassword = pass
+        android.signingConfigs.mainConfig.storePassword = store_pass
+
+    } // end if has task
+} // end whenReady
