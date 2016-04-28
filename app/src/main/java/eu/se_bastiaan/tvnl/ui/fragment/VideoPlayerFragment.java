@@ -16,7 +16,7 @@ import com.devbrackets.android.exomedia.event.EMMediaProgressEvent;
 import com.devbrackets.android.exomedia.listener.EMProgressCallback;
 import com.devbrackets.android.exomedia.listener.ExoPlayerListener;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import eu.se_bastiaan.tvnl.R;
 import eu.se_bastiaan.tvnl.exomedia.TVNLVideoView;
@@ -37,9 +37,9 @@ public class VideoPlayerFragment extends Fragment implements ViewWithPresenter<V
     View rootView;
     StreamInfo streamInfo;
 
-    @Bind(R.id.video_view)
+    @BindView(R.id.video_view)
     TVNLVideoView videoView;
-    @Bind(R.id.progress_indicator)
+    @BindView(R.id.progress_indicator)
     ProgressBar progressIndicator;
 
     @Override

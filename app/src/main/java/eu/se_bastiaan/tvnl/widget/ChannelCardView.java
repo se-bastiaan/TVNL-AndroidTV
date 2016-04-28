@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.request.target.Target;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import eu.se_bastiaan.tvnl.R;
 import me.zhanghai.android.materialprogressbar.HorizontalProgressDrawable;
@@ -28,17 +28,17 @@ public class ChannelCardView extends BaseCardView {
     private Target target;
     private String currentImageUrl = "empty";
 
-    @Bind(R.id.main_image)
+    @BindView(R.id.main_image)
     ImageView imageView;
-    @Bind(R.id.overlay_image)
+    @BindView(R.id.overlay_image)
     ImageView overlayImageView;
-    @Bind(R.id.title_text)
+    @BindView(R.id.title_text)
     TextView titleTextView;
-    @Bind(R.id.content_text)
+    @BindView(R.id.content_text)
     TextView contentTextView;
-    @Bind(R.id.progress)
+    @BindView(R.id.progress)
     ProgressBar progressBar;
-    @Bind(R.id.info_field)
+    @BindView(R.id.info_field)
     RelativeLayout infoField;
 
     public ChannelCardView(Context context) {

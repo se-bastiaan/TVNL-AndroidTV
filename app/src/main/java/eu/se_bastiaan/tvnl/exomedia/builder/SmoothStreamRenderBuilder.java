@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Brian Wernick,
+ * Copyright (C) 2016 Brian Wernick,
  * Copyright (C) 2015 Sébastiaan Versteeg,
  * Copyright (C) 2015 The Android Open Source Project
  *
@@ -20,14 +20,17 @@ package eu.se_bastiaan.tvnl.exomedia.builder;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaCodec;
 import android.os.Build;
 import android.os.Handler;
 
+import com.devbrackets.android.exomedia.builder.RenderBuilder;
 import com.devbrackets.android.exomedia.exoplayer.EMExoPlayer;
+import com.devbrackets.android.exomedia.renderer.EMMediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.DefaultLoadControl;
 import com.google.android.exoplayer.LoadControl;
-import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
+import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.audio.AudioCapabilities;
@@ -46,6 +49,7 @@ import com.google.android.exoplayer.text.TextTrackRenderer;
 import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer.upstream.DefaultUriDataSource;
 import com.google.android.exoplayer.util.ManifestFetcher;
 import com.google.android.exoplayer.util.Util;
@@ -59,25 +63,31 @@ import eu.se_bastiaan.tvnl.exomedia.okhttp.OkUriDataSource;
  * Smooth Streaming streams.
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-public class SmoothStreamingRenderBuilder extends RenderBuilder {
+public class SmoothStreamRenderBuilder extends RenderBuilder {
     private static final int LIVE_EDGE_LATENCY_MS = 30000;
 
     private final Context context;
     private final String userAgent;
     private final String url;
+    private final int streamType;
 
     private AsyncRendererBuilder currentAsyncBuilder;
 
-    public SmoothStreamingRenderBuilder(Context context, String userAgent, String url) {
+    public SmoothStreamRenderBuilder(Context context, String userAgent, String url) {
+        this(context, userAgent, url, AudioManager.STREAM_MUSIC);
+    }
+
+    public SmoothStreamRenderBuilder(Context context, String userAgent, String url, int streamType) {
         super(context, userAgent, url);
         this.context = context;
         this.userAgent = userAgent;
         this.url = Util.toLowerInvariant(url).endsWith("/manifest") ? url : url + "/Manifest";
+        this.streamType = streamType;
     }
 
     @Override
     public void buildRenderers(EMExoPlayer player) {
-        currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, player);
+        currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, player, streamType);
         currentAsyncBuilder.init();
     }
 
@@ -92,14 +102,16 @@ public class SmoothStreamingRenderBuilder extends RenderBuilder {
     private static final class AsyncRendererBuilder implements ManifestFetcher.ManifestCallback<SmoothStreamingManifest> {
         private final Context context;
         private final String userAgent;
+        private final int streamType;
         private final EMExoPlayer player;
         private final ManifestFetcher<SmoothStreamingManifest> manifestFetcher;
 
         private boolean canceled;
 
-        public AsyncRendererBuilder(Context context, String userAgent, String url, EMExoPlayer player) {
+        public AsyncRendererBuilder(Context context, String userAgent, String url, EMExoPlayer player, int streamType) {
             this.context = context;
             this.userAgent = userAgent;
+            this.streamType = streamType;
             this.player = player;
             SmoothStreamingManifestParser parser = new SmoothStreamingManifestParser();
             manifestFetcher = new ManifestFetcher<>(url, new OkUriDataSource(context, userAgent), parser);
@@ -155,42 +167,42 @@ public class SmoothStreamingRenderBuilder extends RenderBuilder {
 
             //Create the Sample Source to be used by the Video Renderer
             DataSource dataSourceVideo = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
-            SmoothStreamingTrackSelector trackSelectorVideo = new DefaultSmoothStreamingTrackSelector(context, SmoothStreamingManifest.StreamElement.TYPE_VIDEO);
+            SmoothStreamingTrackSelector trackSelectorVideo = DefaultSmoothStreamingTrackSelector.newVideoInstance(context, true, false);
             ChunkSource chunkSourceVideo = new SmoothStreamingChunkSource(manifestFetcher, trackSelectorVideo, dataSourceVideo,
                     new FormatEvaluator.AdaptiveEvaluator(bandwidthMeter), LIVE_EDGE_LATENCY_MS);
             ChunkSampleSource sampleSourceVideo = new ChunkSampleSource(chunkSourceVideo, loadControl, BUFFER_SEGMENTS_VIDEO * BUFFER_SEGMENT_SIZE,
-                    mainHandler, player, EMExoPlayer.RENDER_VIDEO_INDEX);
+                    mainHandler, player, EMExoPlayer.RENDER_VIDEO);
 
 
             //Create the Sample Source to be used by the Audio Renderer
             DataSource dataSourceAudio = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
-            SmoothStreamingTrackSelector trackSelectorAudio = new DefaultSmoothStreamingTrackSelector(context, SmoothStreamingManifest.StreamElement.TYPE_AUDIO);
+            SmoothStreamingTrackSelector trackSelectorAudio = DefaultSmoothStreamingTrackSelector.newAudioInstance();
             ChunkSource chunkSourceAudio = new SmoothStreamingChunkSource(manifestFetcher, trackSelectorAudio, dataSourceAudio, null, LIVE_EDGE_LATENCY_MS);
             ChunkSampleSource sampleSourceAudio = new ChunkSampleSource(chunkSourceAudio, loadControl, BUFFER_SEGMENTS_AUDIO * BUFFER_SEGMENT_SIZE,
-                    mainHandler, player, EMExoPlayer.RENDER_AUDIO_INDEX);
+                    mainHandler, player, EMExoPlayer.RENDER_AUDIO);
 
 
             //Create the Sample Source to be used by the Closed Captions Renderer
             DataSource dataSourceCC = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
-            SmoothStreamingTrackSelector trackSelectorCC = new DefaultSmoothStreamingTrackSelector(context, SmoothStreamingManifest.StreamElement.TYPE_TEXT);
+            SmoothStreamingTrackSelector trackSelectorCC = DefaultSmoothStreamingTrackSelector.newTextInstance();
             ChunkSource chunkSourceCC = new SmoothStreamingChunkSource(manifestFetcher, trackSelectorCC, dataSourceCC, null, LIVE_EDGE_LATENCY_MS);
             ChunkSampleSource sampleSourceCC = new ChunkSampleSource(chunkSourceCC, loadControl, BUFFER_SEGMENTS_TEXT * BUFFER_SEGMENT_SIZE,
-                    mainHandler, player, EMExoPlayer.RENDER_CLOSED_CAPTION_INDEX);
+                    mainHandler, player, EMExoPlayer.RENDER_CLOSED_CAPTION);
 
 
             // Build the renderers
-            MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(context, sampleSourceVideo, MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT,
-                    MAX_JOIN_TIME, drmSessionManager, true, mainHandler, player, DROPPED_FRAME_NOTIFICATION_AMOUNT);
-            MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSourceAudio, drmSessionManager, true, mainHandler, player,
-                    AudioCapabilities.getCapabilities(context));
+            MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(context, sampleSourceVideo, MediaCodecSelector.DEFAULT,
+                    MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, MAX_JOIN_TIME, drmSessionManager, true, mainHandler, player, DROPPED_FRAME_NOTIFICATION_AMOUNT);
+            EMMediaCodecAudioTrackRenderer audioRenderer = new EMMediaCodecAudioTrackRenderer(sampleSourceAudio, MediaCodecSelector.DEFAULT, drmSessionManager,
+                    true, mainHandler, player, AudioCapabilities.getCapabilities(context), streamType);
             TextTrackRenderer captionsRenderer = new TextTrackRenderer(sampleSourceCC, player, mainHandler.getLooper());
 
 
             // Invoke the callback
             TrackRenderer[] renderers = new TrackRenderer[EMExoPlayer.RENDER_COUNT];
-            renderers[EMExoPlayer.RENDER_VIDEO_INDEX] = videoRenderer;
-            renderers[EMExoPlayer.RENDER_AUDIO_INDEX] = audioRenderer;
-            renderers[EMExoPlayer.RENDER_CLOSED_CAPTION_INDEX] = captionsRenderer;
+            renderers[EMExoPlayer.RENDER_VIDEO] = videoRenderer;
+            renderers[EMExoPlayer.RENDER_AUDIO] = audioRenderer;
+            renderers[EMExoPlayer.RENDER_CLOSED_CAPTION] = captionsRenderer;
             player.onRenderers(renderers, bandwidthMeter);
         }
     }

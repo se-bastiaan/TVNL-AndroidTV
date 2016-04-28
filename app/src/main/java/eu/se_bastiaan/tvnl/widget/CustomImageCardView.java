@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.request.target.Target;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import eu.se_bastiaan.tvnl.R;
 
@@ -19,9 +19,9 @@ public class CustomImageCardView extends ImageCardView {
     private Target target;
     private Integer titleTextColor, contentTextColor;
 
-    @Bind(R.id.title_text)
+    @BindView(R.id.title_text)
     TextView titleTextView;
-    @Bind(R.id.content_text)
+    @BindView(R.id.content_text)
     TextView contentTextView;
 
     public CustomImageCardView(Context context) {

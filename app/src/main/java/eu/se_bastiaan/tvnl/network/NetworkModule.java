@@ -24,9 +24,9 @@ import eu.se_bastiaan.tvnl.network.service.LivestreamsApiService;
 import eu.se_bastiaan.tvnl.network.service.OdiApiService;
 import eu.se_bastiaan.tvnl.network.service.RadioboxApiService;
 import eu.se_bastiaan.tvnl.network.service.UGApiService;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
-import retrofit2.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class NetworkModule {
