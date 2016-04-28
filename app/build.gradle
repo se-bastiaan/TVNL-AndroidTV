@@ -52,18 +52,6 @@ android {
         javaMaxHeapSize "4g"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
     signingConfigs {
         mainConfig {
             storeFile file(System.getenv("SIGN_STORE_FILE").toString())
@@ -71,6 +59,19 @@ android {
             keyPassword 'password' // Fictive password to pass Gradle check
             storePassword 'password' // Fictive password to pass Gradle check
         }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.mainConfig
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
