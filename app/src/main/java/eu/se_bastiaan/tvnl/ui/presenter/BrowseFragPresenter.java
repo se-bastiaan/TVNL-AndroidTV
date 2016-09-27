@@ -647,7 +647,7 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
                                 }
                             });
                 } else {
-                    liveStreamUrlObservable = ugApiService.getLiveDataByChannel(channel.getId(), Extension.SMOOTH_STREAMING)
+                    liveStreamUrlObservable = ugApiService.getLiveDataByChannel(channel.getId(), Extension.DASH)
                             .toObservable()
                             .observeOn(Schedulers.newThread())
                             .map(new Func1<EncryptedStreamData, String>() {
