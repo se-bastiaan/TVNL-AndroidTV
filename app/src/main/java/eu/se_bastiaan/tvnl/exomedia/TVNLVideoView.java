@@ -18,12 +18,13 @@ package eu.se_bastiaan.tvnl.exomedia;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 
-import com.devbrackets.android.exomedia.EMVideoView;
-import com.devbrackets.android.exomedia.builder.RenderBuilder;
+import com.devbrackets.android.exomedia.core.builder.RenderBuilder;
+import com.devbrackets.android.exomedia.core.video.ExoVideoView;
 import com.devbrackets.android.exomedia.type.MediaSourceType;
-import com.devbrackets.android.exomedia.util.MediaUtil;
+import com.devbrackets.android.exomedia.ui.widget.EMVideoView;
 
 import eu.se_bastiaan.tvnl.exomedia.builder.DashRenderBuilder;
 import eu.se_bastiaan.tvnl.exomedia.builder.HlsRenderBuilder;
@@ -57,26 +58,30 @@ public class TVNLVideoView extends EMVideoView {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    @Override
-    public void setVideoURI(Uri uri, MediaUtil.MediaType defaultMediaType) {
+    public void setVideoURI(Uri uri) {
         RenderBuilder builder = null;
+
         if(uri != null) {
-            builder = getRendererBuilder(MediaSourceType.get(uri), uri, defaultMediaType);
+            builder = getRendererBuilder(MediaSourceType.getByLooseComparison(uri), uri);
         }
 
         setVideoURI(uri, builder);
     }
 
-    private RenderBuilder getRendererBuilder(MediaSourceType renderType, Uri uri, MediaUtil.MediaType defaultMediaType) {
+    protected RenderBuilder getRendererBuilder(@NonNull MediaSourceType renderType, @NonNull Uri uri) {
+        String userAgent = "";
+        if (videoViewImpl instanceof ExoVideoView) {
+            userAgent = ((ExoVideoView) videoViewImpl).getUserAgent();
+        }
         switch (renderType) {
             case HLS:
-                return new HlsRenderBuilder(getContext().getApplicationContext(), getUserAgent(), uri.toString());
+                return new HlsRenderBuilder(getContext().getApplicationContext(), userAgent, uri.toString());
             case DASH:
-                return new DashRenderBuilder(getContext().getApplicationContext(), getUserAgent(), uri.toString());
+                return new DashRenderBuilder(getContext().getApplicationContext(), userAgent, uri.toString());
             case SMOOTH_STREAM:
-                return new SmoothStreamRenderBuilder(getContext().getApplicationContext(), getUserAgent(), uri.toString());
+                return new SmoothStreamRenderBuilder(getContext().getApplicationContext(), userAgent, uri.toString());
             default:
-                return new RenderBuilder(getContext().getApplicationContext(), getUserAgent(), uri.toString());
+                return new RenderBuilder(getContext().getApplicationContext(), userAgent, uri.toString());
         }
     }
 

@@ -47,9 +47,9 @@ public class SearchFragment extends SearchSupportFragment implements ViewWithPre
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        presenterDelegate.onPause(getActivity().isFinishing());
+    public void onDestroy() {
+        super.onDestroy();
+        presenterDelegate.onDestroy(getActivity().isFinishing());
     }
 
     /* Presenter */

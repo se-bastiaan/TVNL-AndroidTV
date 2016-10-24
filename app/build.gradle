@@ -21,13 +21,13 @@ advancedVersioning {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "eu.se_bastiaan.tvnl"
         minSdkVersion 21
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode advancedVersioning.versionCode
         versionName advancedVersioning.versionName
         multiDexEnabled true
@@ -124,7 +124,7 @@ dependencies {
 
     compile 'me.zhanghai.android.materialprogressbar:library:1.1.6'
 
-    compile 'com.devbrackets.android:exomedia:2.5.6'
+    compile 'com.devbrackets.android:exomedia:3.0.5'
 
     compile "info.android15.nucleus:nucleus:${nucleusVersion}"
     compile "info.android15.nucleus:nucleus-support-v4:${nucleusVersion}"

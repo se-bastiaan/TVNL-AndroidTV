@@ -57,9 +57,9 @@ public class PlaybackOverlayFragment extends PlaybackOverlaySupportFragment impl
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        presenterDelegate.onPause(getActivity().isFinishing());
+    public void onDestroy() {
+        super.onDestroy();
+        presenterDelegate.onDestroy(getActivity().isFinishing());
     }
 
     public StreamInfo getStreamInfo() {

@@ -54,9 +54,9 @@ public class OverviewBrowseFragment extends BrowseSupportFragment implements Vie
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        presenterDelegate.onPause(getActivity().isFinishing());
+    public void onDestroy() {
+        super.onDestroy();
+        presenterDelegate.onDestroy(getActivity().isFinishing());
     }
 
     @Override

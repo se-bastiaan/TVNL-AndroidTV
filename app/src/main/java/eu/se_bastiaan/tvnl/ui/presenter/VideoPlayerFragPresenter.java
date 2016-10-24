@@ -19,6 +19,8 @@ import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.devbrackets.android.exomedia.type.MediaSourceType;
+import com.devbrackets.android.exomedia.util.MediaSourceUtil;
 import com.devbrackets.android.exomedia.util.MediaUtil;
 import com.squareup.otto.Subscribe;
 
@@ -137,16 +139,13 @@ public class VideoPlayerFragPresenter extends BasePresenter<VideoPlayerFragment>
 
         TVNLVideoView videoView = fragment.getVideoView();
 
-        MediaUtil.MediaType mediaType = MediaUtil.getMediaType(videoLocation);
-        if(videoLocation.endsWith("Manifest"))
-            mediaType = MediaUtil.MediaType.SMOOTH_STREAM;
-
         if(currentTime == -1 && streamInfo.getStartPosition() > 0 && streamInfo.getStartPosition() > currentTime) {
             currentTime = streamInfo.getStartPosition().intValue();
         } else if (currentTime == -1) {
             currentTime = 0;
         }
-        videoView.setVideoURI(Uri.parse(videoLocation), mediaType);
+
+        videoView.setVideoURI(Uri.parse(videoLocation));
         ended = false;
 
         activateMediaSession();
@@ -252,7 +251,6 @@ public class VideoPlayerFragPresenter extends BasePresenter<VideoPlayerFragment>
         TVNLVideoView videoView = fragment.getVideoView();
         videoView.pause();
         videoView.setKeepScreenOn(false);
-        videoView.stopProgressPoll();
 
         updatePlayPauseState();
     }

@@ -2,8 +2,8 @@ package eu.se_bastiaan.tvnl.ui.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,9 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.devbrackets.android.exomedia.event.EMMediaProgressEvent;
-import com.devbrackets.android.exomedia.listener.EMProgressCallback;
-import com.devbrackets.android.exomedia.listener.ExoPlayerListener;
+import com.devbrackets.android.exomedia.listener.OnCompletionListener;
+import com.devbrackets.android.exomedia.listener.OnErrorListener;
+import com.devbrackets.android.exomedia.listener.OnPreparedListener;
+import com.devbrackets.android.exomedia.util.Repeater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +29,6 @@ import nucleus.factory.ReflectionPresenterFactory;
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.PresenterLifecycleDelegate;
 import nucleus.view.ViewWithPresenter;
-import timber.log.Timber;
 
 @RequiresPresenter(VideoPlayerFragPresenter.class)
 public class VideoPlayerFragment extends Fragment implements ViewWithPresenter<VideoPlayerFragPresenter> {
@@ -36,6 +36,9 @@ public class VideoPlayerFragment extends Fragment implements ViewWithPresenter<V
     Callback callback;
     View rootView;
     StreamInfo streamInfo;
+
+    @NonNull
+    protected Repeater progressPollRepeater = new Repeater();
 
     @BindView(R.id.video_view)
     TVNLVideoView videoView;
@@ -101,23 +104,22 @@ public class VideoPlayerFragment extends Fragment implements ViewWithPresenter<V
         videoView.setOnCompletionListener(onCompletionListener);
         videoView.setOnPreparedListener(onPreparedListener);
         videoView.setOnErrorListener(onErrorListener);
-        videoView.setOnInfoListener(onInfoListener);
-        videoView.addExoPlayerListener(exoPlayerListener);
-        videoView.startProgressPoll(progressCallback);
+
+        progressPollRepeater.start();
+        progressPollRepeater.setRepeatListener(progressPollRepeatListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        presenterDelegate.onPause(getActivity().isFinishing());
-
-        videoView.removeExoPlayerListener(exoPlayerListener);
-        videoView.stopProgressPoll();
+        progressPollRepeater.stop();
+        progressPollRepeater.setRepeatListener(null);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        presenterDelegate.onDestroy(getActivity().isFinishing());
         videoView.stopPlayback();
     }
 
@@ -184,58 +186,33 @@ public class VideoPlayerFragment extends Fragment implements ViewWithPresenter<V
     }
 
     /* Listener section */
-    MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
+    OnPreparedListener onPreparedListener = new OnPreparedListener() {
         @Override
-        public void onPrepared(MediaPlayer mediaPlayer) {
+        public void onPrepared() {
             getPresenter().isReady(VideoPlayerFragment.this, getVideoView());
         }
     };
 
-    MediaPlayer.OnInfoListener onInfoListener = new MediaPlayer.OnInfoListener() {
+    OnCompletionListener onCompletionListener = new OnCompletionListener() {
         @Override
-        public boolean onInfo(MediaPlayer mediaPlayer, int i, int i1) {
-            return false;
-        }
-    };
-
-    MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
-        @Override
-        public void onCompletion(MediaPlayer mediaPlayer) {
+        public void onCompletion() {
             getPresenter().isCompleted(getVideoView());
         }
     };
 
-    MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
+    OnErrorListener onErrorListener = new OnErrorListener() {
         @Override
-        public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
+        public boolean onError() {
             getPresenter().encounteredError(VideoPlayerFragment.this, getVideoView());
             return true;
         }
     };
 
-    EMProgressCallback progressCallback = new EMProgressCallback() {
+    Repeater.RepeatListener progressPollRepeatListener = new Repeater.RepeatListener() {
         @Override
-        public boolean onProgressUpdated(EMMediaProgressEvent progressEvent) {
-            if(progressEvent.getDuration() > 0)
-                getPresenter().updateProgress(progressEvent.getPosition(), progressEvent.getDuration());
-            return true;
-        }
-    };
-
-    ExoPlayerListener exoPlayerListener = new ExoPlayerListener() {
-        @Override
-        public void onStateChanged(boolean playWhenReady, int playbackState) {
-
-        }
-
-        @Override
-        public void onError(Exception e) {
-            Timber.e(e, "ExoPlayer exception");
-        }
-
-        @Override
-        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-
+        public void onRepeat() {
+            if(getVideoView().getDuration() > 0)
+                getPresenter().updateProgress(getVideoView().getCurrentPosition(), getVideoView().getDuration());
         }
     };
 

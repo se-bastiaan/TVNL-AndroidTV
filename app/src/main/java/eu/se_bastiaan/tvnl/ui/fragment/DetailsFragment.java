@@ -57,9 +57,9 @@ public class DetailsFragment extends DetailsSupportFragment implements ViewWithP
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        presenterDelegate.onPause(getActivity().isFinishing());
+    public void onDestroy() {
+        super.onDestroy();
+        presenterDelegate.onDestroy(getActivity().isFinishing());
     }
 
     @Override
