@@ -258,9 +258,9 @@ public class DetailsFragPresenter extends BasePresenter<DetailsFragment> {
                                                 if (!episode.getSeries().getName().equals(episode.getName()))
                                                     subtitle = String.format(Locale.getDefault(), "%s (%s)", episode.getSeries().getName(), TextUtils.join(", ", episode.getBroadcasters()));
                                                 if(action.getId() == ACTION_PLAY_FRAG) {
-                                                    return new StreamInfo(episode.getId(), odiData.getUrl().replace(".m3u8", ".mpd"), title, subtitle, episode.getImage(), TimeUnit.SECONDS.toMillis(((VideoFragment) item.getObject()).getStartsAt()));
+                                                    return new StreamInfo(episode.getId(), odiData.getUrl(), title, subtitle, episode.getImage(), TimeUnit.SECONDS.toMillis(((VideoFragment) item.getObject()).getStartsAt()));
                                                 }
-                                                return new StreamInfo(episode.getId(), odiData.getUrl().replace(".m3u8", ".mpd"), title, subtitle, episode.getImage());
+                                                return new StreamInfo(episode.getId(), odiData.getUrl(), title, subtitle, episode.getImage());
                                             }
                                         }
                                 )

@@ -647,7 +647,7 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
                                 }
                             });
                 } else {
-                    liveStreamUrlObservable = ugApiService.getLiveDataByChannel(channel.getId(), Extension.DASH)
+                    liveStreamUrlObservable = ugApiService.getLiveDataByChannel(channel.getId(), Extension.HLS)
                             .toObservable()
                             .observeOn(Schedulers.newThread())
                             .map(new Func1<EncryptedStreamData, String>() {
@@ -723,7 +723,7 @@ public class BrowseFragPresenter extends BasePresenter<OverviewBrowseFragment> {
                                             String title = episode.getName();
                                             if (!episode.getSeries().getName().equals(episode.getName()))
                                                 title = String.format(Locale.getDefault(), "%s: %s", episode.getSeries().getName(), episode.getName());
-                                            return new StreamInfo(episode.getId(), odiData.getUrl().replace(".m3u8", ".mpd"), title, TextUtils.join(", ", episode.getBroadcasters()), episode.getImage());
+                                            return new StreamInfo(episode.getId(), odiData.getUrl(), title, TextUtils.join(", ", episode.getBroadcasters()), episode.getImage());
                                         }
                                     }
                             )
