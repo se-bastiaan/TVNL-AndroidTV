@@ -5,15 +5,11 @@ This is the source code of the ['TVNL' Android TV application](https://play.goog
 
 It's been some time since I built the [NPO application for Windows Phone](https://github.com/se-bastiaan/TVNL-WindowsPhone). Now that I wanted to build something using Android's [Leanback library](http://developer.android.com/tools/support-library/features.html#v17-leanback) I decided that an Android TV application had some potential.
 
-The application is not completely done yet, I still need to finish some things. But those are things for the future.
+~The application is not completely done yet, I still need to finish some things. But those are things for the future.~
+The future never came. If I ever work on this again then it'll be a full rewrite since the API's changed. 
 
-## To-do list
-
-- [ ] Write unit tests
-- [ ] Write functional (UI) tests
-- [ ] Write integration tests
-- [ ] Setup a CI
-- [ ] Add documentation
+This repo's still here because it's cool to keep old things. If my future me ever reads this:
+This was awesome. You expected 3 installs, you got 5000. No marketing anywhere. The internet is cool.
 
 ## License
 
