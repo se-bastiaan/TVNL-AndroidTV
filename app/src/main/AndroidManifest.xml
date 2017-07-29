@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="eu.se_bastiaan.tvnl">
+    package="eu.se_bastiaan.tvnl" >
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -14,49 +11,29 @@
     <uses-feature
         android:name="android.software.leanback"
         android:required="true" />
-    <uses-feature
-        android:name="android.hardware.screen.portrait"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.microphone"
-        android:required="false" />
 
     <application
         android:allowBackup="true"
-        android:name=".TVNLApplication"
-        android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
-        android:logo="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TVNL">
+        android:theme="@style/Theme.Leanback" >
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name=".MainActivity"
+            android:banner="@drawable/app_icon_your_company"
+            android:icon="@drawable/app_icon_your_company"
             android:label="@string/app_name"
-            android:screenOrientation="landscape">
+            android:logo="@drawable/app_icon_your_company"
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.activity.DetailsActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" />
-        <activity android:name=".ui.activity.SearchActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" />
-        <activity android:name=".ui.activity.VideoPlayerActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" />
-
-        <service android:name=".service.RecommendationService" />
-
-        <meta-data
-            android:name="eu.se_bastiaan.tvnl.network.glide.OkHttpGlideModule"
-            android:value="GlideModule"/>
-
+        <activity android:name=".DetailsActivity" />
+        <activity android:name=".PlaybackActivity" />
+        <activity android:name=".BrowseErrorActivity" />
     </application>
 
 </manifest>
