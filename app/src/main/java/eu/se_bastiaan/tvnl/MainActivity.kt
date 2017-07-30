@@ -16,6 +16,9 @@ package eu.se_bastiaan.tvnl
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
+import eu.se_bastiaan.tvnl.api.StartApi
+import io.reactivex.functions.Consumer
 
 /**
  * Loads [MainFragment].
@@ -25,5 +28,10 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        StartApi().pageManager.getAbsolutePage("http://start-api.npo.nl/page/home")
+                .subscribe(Consumer {
+                    Log.d("MainActivity", it.toString())
+                })
     }
 }
