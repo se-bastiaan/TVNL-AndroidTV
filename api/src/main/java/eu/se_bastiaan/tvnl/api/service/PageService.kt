@@ -7,7 +7,7 @@ import retrofit2.http.Header
 import retrofit2.http.Query
 import retrofit2.http.Url
 
-interface PageService {
+internal interface PageService {
 
     @GET
     fun getAbsolutePage(@Url url: String): Single<Page>

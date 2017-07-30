@@ -1,16 +1,14 @@
 package eu.se_bastiaan.tvnl.api
 
 import com.google.gson.GsonBuilder
+import eu.se_bastiaan.tvnl.api.api.*
 import eu.se_bastiaan.tvnl.api.deserializer.AbstractAssetDeserializer
 import eu.se_bastiaan.tvnl.api.interceptor.ApiKeyHeaderInterceptor
-import eu.se_bastiaan.tvnl.api.manager.PageManager
 import eu.se_bastiaan.tvnl.api.model.page.component.AbstractComponent
 import eu.se_bastiaan.tvnl.api.deserializer.AbstractComponentDeserializer
 import eu.se_bastiaan.tvnl.api.deserializer.ZonedDateTimeDeserializer
-import eu.se_bastiaan.tvnl.api.manager.MenuManager
 import eu.se_bastiaan.tvnl.api.model.page.component.data.AbstractAsset
-import eu.se_bastiaan.tvnl.api.service.MenuService
-import eu.se_bastiaan.tvnl.api.service.PageService
+import eu.se_bastiaan.tvnl.api.service.*
 import io.reactivex.schedulers.Schedulers
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -24,8 +22,11 @@ class StartApi(httpClient: OkHttpClient = OkHttpClient.Builder().build(),
 
     internal val retrofit : Retrofit
 
-    val pageManager : PageManager
-    val menuManager : MenuManager
+    val page: PageApi
+    val menu: MenuApi
+    val epg: EpgApi
+    val component: ComponentApi
+    val search: SearchApi
 
     init {
         val gson = GsonBuilder()
@@ -41,8 +42,11 @@ class StartApi(httpClient: OkHttpClient = OkHttpClient.Builder().build(),
                 .client(httpClient.newBuilder().addInterceptor(ApiKeyHeaderInterceptor()).build())
                 .build()
 
-        pageManager = PageManager(retrofit.create(PageService::class.java))
-        menuManager = MenuManager(retrofit.create(MenuService::class.java))
+        page = PageApi(retrofit.create(PageService::class.java))
+        menu = MenuApi(retrofit.create(MenuService::class.java))
+        epg = EpgApi(retrofit.create(EpgService::class.java))
+        component = ComponentApi(retrofit.create(ComponentService::class.java))
+        search = SearchApi(retrofit.create(SearchService::class.java))
     }
 
     constructor(httpClient: OkHttpClient) : this(httpClient, HttpUrl.parse("https://start-api.npo.nl/")!!)

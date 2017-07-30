@@ -29,7 +29,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        StartApi().pageManager.getAbsolutePage("http://start-api.npo.nl/page/home")
+        StartApi().page.getAbsolutePage("http://start-api.npo.nl/page/home")
                 .subscribe(Consumer {
                     Log.d("MainActivity", it.toString())
                 })

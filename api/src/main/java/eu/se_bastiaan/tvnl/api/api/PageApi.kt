@@ -1,10 +1,10 @@
-package eu.se_bastiaan.tvnl.api.manager
+package eu.se_bastiaan.tvnl.api.api
 
 import eu.se_bastiaan.tvnl.api.model.page.Page
 import eu.se_bastiaan.tvnl.api.service.PageService
 import io.reactivex.Single
 
-class PageManager(internal val pageService : PageService) {
+class PageApi internal constructor(private val pageService : PageService) {
 
     fun getAbsolutePage(url: String): Single<Page> {
         return pageService.getAbsolutePage(url)
